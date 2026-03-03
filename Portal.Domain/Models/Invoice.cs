@@ -53,24 +53,16 @@ namespace Portal.Domain.Models
             Status = InvoiceStatus.Aprovada;
         }
 
-        public ValidationResult AtualizarDados(
-         DateTime dataEmissao,
-         Guid vendedorId,
-         string clienteNome,
-         string clienteDocumento,
-         decimal valorTotal,
-         InvoiceStatus status,
-         string? observacoes
-     )
+        public void AtualizarDados(
+        DateTime dataEmissao,
+        Guid vendedorId,
+        string clienteNome,
+        string clienteDocumento,
+        decimal valorTotal,
+        InvoiceStatus status,
+        string? observacoes
+         )
         {
-            var validation = new ValidationResult();
-
-            if (Status == InvoiceStatus.Aprovada && vendedorId != VendedorId)
-                validation.Add(nameof(VendedorId), "Não é permitido alterar o vendedor após aprovação.");
-
-            if (!validation.IsValid)
-                return validation;
-
             DataEmissao = dataEmissao;
             VendedorId = vendedorId;
             ClienteNome = clienteNome;
@@ -78,9 +70,6 @@ namespace Portal.Domain.Models
             ValorTotal = valorTotal;
             Status = status;
             Observacoes = observacoes;
- 
-
-            return validation;
         }
 
 

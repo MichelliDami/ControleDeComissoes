@@ -3,40 +3,49 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentValidation;
 using Portal.Domain.Models;
 using Portal.Domain.Validation.Documento;
 
 namespace Portal.Domain.Validation.Vendedores
 {
-    public class CadastroVendedorValidator
+    public class CadastroVendedorValidator : AbstractValidator<Vendedor>
     {
-        public ValidationResult Validate(Vendedor vendedor)
+        public CadastroVendedorValidator()
         {
-            var result = new ValidationResult();
+            RuleFor(v => v.Nome)
+                .NotEmpty()
+                .WithMessage("Nome é obrigatório.")
+                .MaximumLength(200)
+                .WithMessage("Nome não pode ultrapassar 200 caracteres.");
 
-            if (string.IsNullOrWhiteSpace(vendedor.Nome))
-                result.Add(nameof(vendedor.Nome), "Nome é obrigatório.");
-            else if (vendedor.Nome.Length > 200)
-            {
-                result.Add(nameof(vendedor.Nome), "Nome não pode ultrapassar 200 caracteres.");
-            }
+            RuleFor(v => v.Cpf)
+                .NotEmpty()
+                .WithMessage("CPF é obrigatório.")
+                .Must(CpfValido)
+                .WithMessage("CPF inválido.");
 
-            if (string.IsNullOrWhiteSpace(vendedor.Cpf))
-                result.Add(nameof(vendedor.Cpf), "CPF é obrigatório.");
-            else if (!DocumentoValidator.Validar(vendedor.Cpf))
-                result.Add(nameof(vendedor.Cpf), "CPF inválido.");
+            RuleFor(v => v.Email)
+                .NotEmpty()
+                .WithMessage("Email é obrigatório.")
+                .EmailAddress()
+                .WithMessage("Email inválido.");
 
+            RuleFor(v => v.PercentualComissao)
+                .GreaterThan(0)
+                .WithMessage("Percentual de comissão deve ser maior que zero.")
+                .LessThanOrEqualTo(15)
+                .WithMessage("Percentual não pode ser maior que 15%.");
+        }
 
-            if (string.IsNullOrWhiteSpace(vendedor.Email))
-                result.Add(nameof(vendedor.Email), "Email é obrigatório.");
+        private static bool CpfValido(string? cpf)
+        {
+            if (string.IsNullOrWhiteSpace(cpf))
+                return false;
 
-            if (vendedor.PercentualComissao > 15)
-                result.Add(nameof(vendedor.PercentualComissao),"Percentual não pode ser maior que 15%.");
-
-            if (vendedor.PercentualComissao <= 0)
-                result.Add(nameof(vendedor.PercentualComissao), "Percentual de comissão deve ser maior que zero.");
-
-            return result;
+            var doc = Utils.ApenasNumeros(cpf);
+            return DocumentoValidator.Validar(doc);
         }
     }
 }
+

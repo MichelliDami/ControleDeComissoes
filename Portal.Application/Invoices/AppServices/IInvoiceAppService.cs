@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Portal.Application.Invoices.DTOs;
-using Portal.Domain.Validation;
+using FluentValidation.Results;
 
 namespace Portal.Application.Invoices.Services
 {
@@ -12,9 +12,7 @@ namespace Portal.Application.Invoices.Services
     {
         Task<(ValidationResult Validation, InvoiceResponseDto? Data)> CriarAsync(CriarInvoiceDto dto);
         Task<(ValidationResult Validation, InvoiceResponseDto? Data)> AtualizarAsync(Guid id, AtualizarInvoiceDto dto);
-
         Task<ValidationResult> ExcluirAsync(Guid id);
-
         Task<InvoiceResponseDto?> ObterAsync(Guid id);
         Task<List<InvoiceResponseDto>> ListarAsync();
     }

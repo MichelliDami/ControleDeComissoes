@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Portal.API.ViewModel;
 using Portal.Application.Invoices.DTOs;
 using Portal.Application.Invoices.Services;
 using Portal.Domain.Notifications;
@@ -11,19 +13,69 @@ namespace Portal.API.Controllers
     public class InvoicesController : MainController
     {
         private readonly IInvoiceAppService _invoiceAppService;
+        private readonly IMapper _mapper;
 
         public InvoicesController(
             IInvoiceAppService invoiceAppService,
+            IMapper mapper,
             INotificador notificador) : base(notificador)
         {
             _invoiceAppService = invoiceAppService;
+            _mapper = mapper;
+        }
+       
+
+        [HttpPost]
+        public async Task<ActionResult> Criar([FromBody] InvoiceViewModel viewModel)
+        {
+            if (!ModelState.IsValid) return CustomResponse(ModelState);
+
+            var dto = _mapper.Map<CriarInvoiceDto>(viewModel);
+
+            var (validation, data) = await _invoiceAppService.CriarAsync(dto);
+
+            if (!validation.IsValid)
+            {
+                foreach (var erro in validation.Errors)
+                    NotificarErro(erro.PropertyName, erro.ErrorMessage);
+
+                return CustomResponse();
+            }
+
+            var response = _mapper.Map<InvoiceViewModel>(data);
+
+            return CustomResponse(HttpStatusCode.Created, response);
+        }
+
+
+        [HttpPut("{id:guid}")]
+        public async Task<ActionResult> Atualizar(Guid id, [FromBody] InvoiceViewModel viewModel)
+        {
+            if (!ModelState.IsValid) return CustomResponse(ModelState);
+
+            var dto = _mapper.Map<AtualizarInvoiceDto>(viewModel);
+
+            var (validation, data) = await _invoiceAppService.AtualizarAsync(id, dto);
+
+            if (!validation.IsValid)
+            {
+                foreach (var erro in validation.Errors)
+                    NotificarErro(erro.PropertyName, erro.ErrorMessage);
+
+                return CustomResponse();
+            }
+
+            var response = _mapper.Map<InvoiceViewModel>(data);
+            return CustomResponse(HttpStatusCode.OK, response);
         }
 
         [HttpGet]
         public async Task<ActionResult> Listar()
         {
             var list = await _invoiceAppService.ListarAsync();
-            return CustomResponse(HttpStatusCode.OK, list);
+            var response = _mapper.Map<IEnumerable<InvoiceViewModel>>(list);
+
+            return CustomResponse(HttpStatusCode.OK, response);
         }
 
         [HttpGet("{id:guid}")]
@@ -32,43 +84,9 @@ namespace Portal.API.Controllers
             var invoice = await _invoiceAppService.ObterAsync(id);
             if (invoice is null) return NotFound();
 
-            return CustomResponse(HttpStatusCode.OK, invoice);
-        }
+            var response = _mapper.Map<InvoiceViewModel>(invoice);
 
-        [HttpPost]
-        public async Task<ActionResult> Criar([FromBody] CriarInvoiceDto dto)
-        {
-            if (!ModelState.IsValid) return CustomResponse(ModelState);
-
-            var (validation, data) = await _invoiceAppService.CriarAsync(dto);
-
-            if (!validation.IsValid)
-            {
-                foreach (var erro in validation.Erros)
-                    NotificarErro(erro.Campo, erro.Mensagem);
-
-                return CustomResponse();
-            }
-
-            return CustomResponse(HttpStatusCode.Created, data);
-        }
-
-        [HttpPut("{id:guid}")]
-        public async Task<ActionResult> Atualizar(Guid id, [FromBody] AtualizarInvoiceDto dto)
-        {
-            if (!ModelState.IsValid) return CustomResponse(ModelState);
-
-            var (validation, data) = await _invoiceAppService.AtualizarAsync(id, dto);
-
-            if (!validation.IsValid)
-            {
-                foreach (var erro in validation.Erros)
-                    NotificarErro(erro.Campo, erro.Mensagem);
-
-                return CustomResponse();
-            }
-            return CustomResponse(HttpStatusCode.NoContent);
-
+            return CustomResponse(HttpStatusCode.OK, response);
         }
 
         [HttpDelete("{id:guid}")]
@@ -78,13 +96,20 @@ namespace Portal.API.Controllers
 
             if (!validation.IsValid)
             {
-                foreach (var erro in validation.Erros)
-                    NotificarErro(erro.Campo, erro.Mensagem);
+                foreach (var erro in validation.Errors)
+                {
+                    NotificarErro(erro.PropertyName, erro.ErrorMessage);
+                }
 
                 return CustomResponse();
             }
 
             return CustomResponse(HttpStatusCode.NoContent);
         }
+
+
+
+
+
     }
 }

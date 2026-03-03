@@ -3,56 +3,56 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentValidation;
 using Portal.Domain.Models;
 using Portal.Domain.Validation.Documento;
 
 namespace Portal.Domain.Validation.Invoices
 {
-    public class CadastroInvoiceValidator
+    public class CadastroInvoiceValidator : AbstractValidator<Invoice>
     {
-        public ValidationResult Validate(Invoice invoice)
+        public CadastroInvoiceValidator()
         {
-            var result = new ValidationResult();
+            RuleFor(i => i.DataEmissao)
+                .NotEmpty()
+                .WithMessage("Data de emissão é obrigatória.");
 
-            if (invoice.DataEmissao == default)
-                result.Add(nameof(invoice.DataEmissao), "Data de emissão é obrigatória.");
+            RuleFor(i => i.ClienteNome)
+                .NotEmpty().WithMessage("Nome do cliente é obrigatório.")
+                .MaximumLength(200).WithMessage("Nome do cliente não pode ultrapassar 200 caracteres.");
 
-            if (string.IsNullOrWhiteSpace(invoice.ClienteNome))
-                result.Add(nameof(invoice.ClienteNome), "Nome do cliente é obrigatório.");
-            else if (invoice.ClienteNome.Length > 200)
-                result.Add(nameof(invoice.ClienteNome), "Nome do cliente não pode ultrapassar 200 caracteres.");
+            RuleFor(i => i.ClienteDocumento)
+                .NotEmpty().WithMessage("Documento do cliente é obrigatório.")
+                .Must(doc => DocumentoValido(doc))
+                .WithMessage("Documento do cliente deve ser um CPF (11) ou CNPJ (14) válido.");
 
-            if (string.IsNullOrWhiteSpace(invoice.ClienteDocumento))
+            RuleFor(i => i.ValorTotal)
+                .GreaterThan(0)
+                .WithMessage("Valor total deve ser maior que zero.");
+
+            When(i => i.Observacoes is not null, () =>
             {
-                result.Add(nameof(invoice.ClienteDocumento), "Documento do cliente é obrigatório.");
-            }
-            else
-            {
-                var doc = Utils.ApenasNumeros(invoice.ClienteDocumento);
+                RuleFor(i => i.Observacoes!)
+                    .MaximumLength(500)
+                    .WithMessage("Observações não pode ultrapassar 500 caracteres.");
+            });
+        }
 
-                if (doc.Length == DocumentoValidator.TamanhoCpf)
-                {
-                    if (!DocumentoValidator.Validar(doc))
-                        result.Add(nameof(invoice.ClienteDocumento), "CPF do cliente inválido.");
-                }
-                else if (doc.Length == CnpjValidacao.TamanhoCnpj)
-                {
-                    if (!CnpjValidacao.Validar(doc))
-                        result.Add(nameof(invoice.ClienteDocumento), "CNPJ do cliente inválido.");
-                }
-                else
-                {
-                    result.Add(nameof(invoice.ClienteDocumento), "Documento do cliente deve ser um CPF (11) ou CNPJ (14).");
-                }
-            }
+        private static bool DocumentoValido(string? documento)
+        {
+            if (string.IsNullOrWhiteSpace(documento))
+                return false;
 
-            if (invoice.ValorTotal <= 0)
-                result.Add(nameof(invoice.ValorTotal), "Valor total deve ser maior que zero.");
+            var doc = Utils.ApenasNumeros(documento);
 
-            if (invoice.Observacoes is not null && invoice.Observacoes.Length > 500)
-                result.Add(nameof(invoice.Observacoes), "Observações não pode ultrapassar 500 caracteres.");
+            if (doc.Length == DocumentoValidator.TamanhoCpf)
+                return DocumentoValidator.Validar(doc);
 
-            return result;
+            if (doc.Length == CnpjValidacao.TamanhoCnpj)
+                return CnpjValidacao.Validar(doc);
+
+            return false;
         }
     }
 }
+

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Portal.Application.Vendedores.DTOs;
 using Portal.Domain.Interfaces;
 using Portal.Domain.Models;
-using Portal.Domain.Validation;
+using FluentValidation.Results;
 using Portal.Domain.Validation.Vendedores;
 
 namespace Portal.Application.Vendedores.Services
@@ -22,33 +22,32 @@ namespace Portal.Application.Vendedores.Services
             _comissaoRepository = comissaoRepository;
         }
 
-        public async Task<ValidationResult> CadastrarAsync(CadastrarVendedorDto dto)
+        public async Task<(ValidationResult Validation, VendedorResponseDto? Data)> CadastrarAsync(CadastrarVendedorDto dto)
         {
             var vendedor = new Vendedor(
                 dto.Nome,
                 dto.Cpf,
                 dto.Email,
                 dto.Telefone,
-                dto.PercentualComissao   
+                dto.PercentualComissao
             );
 
             var validation = new CadastroVendedorValidator().Validate(vendedor);
-
             if (!validation.IsValid)
-                return validation;
+                return (validation, null);
 
             if (await _vendedorRepository.ExisteCpfAsync(vendedor.Cpf, vendedor.Id))
-                validation.Add(nameof(vendedor.Cpf), "CPF já cadastrado.");
+                validation.Errors.Add(new ValidationFailure(nameof(vendedor.Cpf), "CPF já cadastrado."));
 
             if (await _vendedorRepository.ExisteEmailAsync(vendedor.Email, vendedor.Id))
-                validation.Add(nameof(vendedor.Email), "Email já cadastrado.");
+                validation.Errors.Add(new ValidationFailure(nameof(vendedor.Email), "Email já cadastrado."));
 
             if (!validation.IsValid)
-                return validation;
+                return (validation, null);
 
             await _vendedorRepository.AddAsync(vendedor);
 
-            return validation;
+            return (new ValidationResult(), Map(vendedor));
         }
 
         public async Task<(ValidationResult Validation, VendedorResponseDto? Data)> AtualizarAsync(Guid id, AtualizarVendedorDto dto)
@@ -58,23 +57,21 @@ namespace Portal.Application.Vendedores.Services
             var vendedor = await _vendedorRepository.GetByIdAsync(id);
             if (vendedor is null)
             {
-                validation.Add("Id", "Vendedor não encontrado.");
+                validation.Errors.Add(new ValidationFailure("Id", "Vendedor não encontrado."));
                 return (validation, null);
             }
 
-           
-            vendedor.AtualizarDados(dto.Nome, dto.Cpf, dto.Email, dto.Telefone,dto.PercentualComissao, dto.Ativo);
+            vendedor.AtualizarDados(dto.Nome, dto.Cpf, dto.Email, dto.Telefone, dto.PercentualComissao, dto.Ativo);
 
-          
             validation = new CadastroVendedorValidator().Validate(vendedor);
             if (!validation.IsValid)
                 return (validation, null);
 
             if (await _vendedorRepository.ExisteCpfAsync(vendedor.Cpf, vendedor.Id))
-                validation.Add(nameof(vendedor.Cpf), "CPF já cadastrado.");
+                validation.Errors.Add(new ValidationFailure(nameof(vendedor.Cpf), "CPF já cadastrado."));
 
             if (await _vendedorRepository.ExisteEmailAsync(vendedor.Email, vendedor.Id))
-                validation.Add(nameof(vendedor.Email), "Email já cadastrado.");
+                validation.Errors.Add(new ValidationFailure(nameof(vendedor.Email), "Email já cadastrado."));
 
             if (!validation.IsValid)
                 return (validation, null);
@@ -91,14 +88,14 @@ namespace Portal.Application.Vendedores.Services
             var vendedor = await _vendedorRepository.GetByIdAsync(id);
             if (vendedor is null)
             {
-                validation.Add("Id", "Vendedor não encontrado.");
+                validation.Errors.Add(new ValidationFailure("Id", "Vendedor não encontrado."));
                 return validation;
             }
-            var possuiComissoes = await _comissaoRepository.ExisteComissaoParaVendedorAsync(vendedor.Id);
 
+            var possuiComissoes = await _comissaoRepository.ExisteComissaoParaVendedorAsync(vendedor.Id);
             if (possuiComissoes)
             {
-                validation.Add("Vendedor", "Não é permitido excluir vendedor com comissões registradas.");
+                validation.Errors.Add(new ValidationFailure("Vendedor", "Não é permitido excluir vendedor com comissões registradas."));
                 return validation;
             }
 
@@ -118,18 +115,16 @@ namespace Portal.Application.Vendedores.Services
             return list.Select(Map).ToList();
         }
 
-        private static VendedorResponseDto Map(Vendedor vendedor)
+        private static VendedorResponseDto Map(Vendedor vendedor) => new()
         {
-            return new VendedorResponseDto
-            {
-                Id = vendedor.Id,
-                Nome = vendedor.Nome,
-                Cpf = vendedor.Cpf,
-                Email = vendedor.Email,
-                PercentualComissao = vendedor.PercentualComissao,
-                Status = vendedor.Ativo
-            };
-        }
+            Id = vendedor.Id,
+            Nome = vendedor.Nome,
+            Cpf = vendedor.Cpf,
+            Email = vendedor.Email,
+            Telefone = vendedor.Telefone,
+            PercentualComissao = vendedor.PercentualComissao,
+            Status = vendedor.Ativo
+        };
     }
 }
 

@@ -6,6 +6,7 @@ using Portal.Domain.Notifications.Portal.Domain.Notifications;
 using Portal.Infra.Data.Repository.Repository;
 using Microsoft.EntityFrameworkCore;
 using Portal.Infra.Data.Repository.Context;
+using Portal.API.Controllers.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,12 @@ builder.Services.AddScoped<IVendedorRepository, VendedorRepository>();
 builder.Services.AddScoped<IComissaoRepository, ComissaoRepository>();
 
 builder.Services.AddScoped<INotificador, Notificador>();
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+builder.Services.AddDbContext<PortalDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
 
 var app = builder.Build();
 
