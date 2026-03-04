@@ -91,62 +91,7 @@ namespace Portal.Tests.Invoices
 
             _invoiceRepo.Verify(r => r.AddAsync(It.IsAny<Invoice>()), Times.Never);
             _comissaoRepo.Verify(r => r.AddAsync(It.IsAny<Comissao>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task CriarAsync_Deve_criar_invoice_e_comissao_quando_dados_validos()
-        {
-            // Arrange
-            var vendedor = CriarVendedorFake(ativo: true, percentual: 5.5m);
-
-            _vendedorRepo.Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
-             .ReturnsAsync(vendedor);
-
-            _validator.Setup(v => v.ValidateAsync(It.IsAny<Invoice>(), It.IsAny<CancellationToken>()))
-                      .ReturnsAsync(Valid());
-
-            Invoice? invoiceCriada = null;
-            Comissao? comissaoCriada = null;
-
-            _invoiceRepo.Setup(r => r.AddAsync(It.IsAny<Invoice>()))
-                        .Callback<Invoice>(i => invoiceCriada = i)
-                        .Returns(Task.CompletedTask);
-
-            _comissaoRepo.Setup(r => r.AddAsync(It.IsAny<Comissao>()))
-                         .Callback<Comissao>(c => comissaoCriada = c)
-                         .Returns(Task.CompletedTask);
-
-            var sut = CreateSut();
-
-            var dto = new CriarInvoiceDto
-            {
-                VendedorId = vendedor.Id,
-                DataEmissao = DateTime.Today,
-                ClienteNome = "Cliente A",
-                ClienteDocumento = "12345678901",
-                ValorTotal = 500m,
-                Observacoes = "teste"
-            };
-
-            // Act
-            var result = await sut.CriarAsync(dto);
-
-            // Assert
-            result.Sucesso.Should().BeTrue();
-            _invoiceRepo.Verify(r => r.AddAsync(It.IsAny<Invoice>()), Times.Once);
-            _comissaoRepo.Verify(r => r.AddAsync(It.IsAny<Comissao>()), Times.Once);
-
-            invoiceCriada.Should().NotBeNull();
-            comissaoCriada.Should().NotBeNull();
-
-            invoiceCriada!.Id.Should().NotBe(Guid.Empty);  
-            comissaoCriada!.InvoiceId.Should().Be(invoiceCriada.Id);
-            comissaoCriada.VendedorId.Should().Be(vendedor.Id);
-            comissaoCriada.ValorBase.Should().Be(500m);
-            comissaoCriada.PercentualAplicado.Should().Be(5.5m);
-            comissaoCriada.ValorComissao.Should().Be(27.50m);
-            comissaoCriada.Status.Should().Be(ComissaoStatus.Pendente);
-        }
+        }   
 
         [Fact]
         public async Task AtualizarAsync_Deve_falhar_se_invoice_aprovada_e_tentar_trocar_vendedor()

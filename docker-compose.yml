@@ -15,6 +15,6 @@ services:
       - sqlserver
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
-      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=PortalDb;User Id=sa;Password=SuaSenhaForte@123;TrustServerCertificate=True;Encrypt=False"
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=PortalDb;User Id=sa;Password=Senha@123;TrustServerCertificate=True;Encrypt=False"
     ports:
       - "8080:8080"
