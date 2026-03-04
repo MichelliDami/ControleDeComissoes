@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Portal.Application.Invoices.DTOs;
 using Portal.Application.Invoices.Services;
-using Portal.Domain.Notifications;
-using Portal.Domain.Notifications.Portal.Domain.Notifications;
 using System.Net;
 
 namespace Portal.API.Controllers.Invoice

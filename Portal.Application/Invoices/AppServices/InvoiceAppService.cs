@@ -10,9 +10,7 @@ using Portal.Application.Invoices.DTOs;
 using Portal.Application.Invoices.Views;
 using Portal.Domain.Interfaces;
 using Portal.Domain.Models;
-using Portal.Domain.Validation;
-using Portal.Domain.Validation.Invoices;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace Portal.Application.Invoices.Services
 {

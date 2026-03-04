@@ -1,8 +1,6 @@
 using Portal.Application.Invoices.Services;
 using Portal.Application.Vendedores.Services;
 using Portal.Domain.Interfaces;
-using Portal.Domain.Notifications;
-using Portal.Domain.Notifications.Portal.Domain.Notifications;
 using Portal.Infra.Data.Repository.Repository;
 using Microsoft.EntityFrameworkCore;
 using Portal.Infra.Data.Repository.Context;
@@ -30,7 +28,6 @@ builder.Services.AddScoped<IComissaoRepository, ComissaoRepository>();
 builder.Services.AddScoped<IValidator<Invoice>, CadastroInvoiceValidator>();
 builder.Services.AddScoped<IValidator<Vendedor>, CadastroVendedorValidator>();
 
-builder.Services.AddScoped<INotificador, Notificador>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

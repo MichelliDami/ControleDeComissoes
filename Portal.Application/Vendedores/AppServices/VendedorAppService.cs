@@ -7,7 +7,6 @@ using Portal.Application.Vendedores.DTOs;
 using Portal.Domain.Interfaces;
 using Portal.Domain.Models;
 using FluentValidation.Results;
-using Portal.Domain.Validation.Vendedores;
 using Portal.Application.Base;
 using FluentValidation;
 using Portal.Application.Invoices.Views;

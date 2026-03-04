@@ -9,8 +9,7 @@ using Portal.Application.Base;
 
 namespace Portal.Application.Vendedores.Services
 {
-        public interface IVendedorAppService : IAplicBase
-    {
+  
         public interface IVendedorAppService : IAplicBase
         {
             Task<ServiceResult> CadastrarAsync(CadastrarVendedorDto dto);
@@ -19,6 +18,6 @@ namespace Portal.Application.Vendedores.Services
 
             Task<ServiceResult> ExcluirAsync(Guid id);
         }
-    }
-    
 }
+    
+
