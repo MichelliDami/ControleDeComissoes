@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Portal.Domain.Validation.Documento
+namespace Portal.Application.Utils.Documento
 {
     public class DocumentoValidator
     {
@@ -157,14 +157,14 @@ namespace Portal.Domain.Validation.Documento
                 if (++m >= _multiplicadores.Count) m = 0;
             }
 
-            var mod = (soma % Modulo);
+            var mod = soma % Modulo;
             var resultado = _complementarDoModulo ? Modulo - mod : mod;
 
             return _substituicoes.ContainsKey(resultado) ? _substituicoes[resultado] : resultado.ToString();
         }
     }
 
-    public class Utils
+    public class UtilsNumero
     {
         public static string ApenasNumeros(string valor)
         {

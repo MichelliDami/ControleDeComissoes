@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Portal.Domain\Portal.Domain.csproj" />
-    <ProjectReference Include="..\Portal.Web\Portal.Web.csproj" />
   </ItemGroup>
 
 </Project>

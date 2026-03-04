@@ -1,15 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35825.156 d17.13
+VisualStudioVersion = 17.13.35825.156
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portal.Application", "Portal.Application\Portal.Application.csproj", "{76565924-9979-41D6-B498-58D0945DDEB8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portal.Domain", "Portal.Domain\Portal.Domain.csproj", "{713E079E-847C-4ECD-8B99-3B6FFC7C9E37}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portal.Infra.Data.Repository", "Portal.Infra.Data.Repository\Portal.Infra.Data.Repository.csproj", "{AEB408E8-279F-429F-A277-16ED5956114D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portal.Web", "Portal.Web\Portal.Web.csproj", "{B10E3EF2-FD34-4987-9B17-68811AF93289}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Portal.API", "Portal.API\Portal.API.csproj", "{BDD6FB17-FA82-4D03-8818-511FC0B8D052}"
 EndProject
@@ -33,10 +31,6 @@ Global
 		{AEB408E8-279F-429F-A277-16ED5956114D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AEB408E8-279F-429F-A277-16ED5956114D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AEB408E8-279F-429F-A277-16ED5956114D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B10E3EF2-FD34-4987-9B17-68811AF93289}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B10E3EF2-FD34-4987-9B17-68811AF93289}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B10E3EF2-FD34-4987-9B17-68811AF93289}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B10E3EF2-FD34-4987-9B17-68811AF93289}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BDD6FB17-FA82-4D03-8818-511FC0B8D052}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BDD6FB17-FA82-4D03-8818-511FC0B8D052}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDD6FB17-FA82-4D03-8818-511FC0B8D052}.Release|Any CPU.ActiveCfg = Release|Any CPU

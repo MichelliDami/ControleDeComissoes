@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentValidation;
 using FluentValidation.Results;
+using Portal.Application.Base;
 using Portal.Application.Invoices.DTOs;
+using Portal.Application.Invoices.Views;
 using Portal.Domain.Interfaces;
 using Portal.Domain.Models;
 using Portal.Domain.Validation;
 using Portal.Domain.Validation.Invoices;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Portal.Application.Invoices.Services
 {
@@ -17,32 +21,33 @@ namespace Portal.Application.Invoices.Services
         private readonly IInvoiceRepository _invoiceRepository;
         private readonly IVendedorRepository _vendedorRepository;
         private readonly IComissaoRepository _comissaoRepository;
+        private readonly IValidator<Invoice> _validator;
 
         public InvoiceAppService(
+            IValidator<Invoice> validator,
             IInvoiceRepository invoiceRepository,
             IVendedorRepository vendedorRepository,
             IComissaoRepository comissaoRepository)
         {
+            _validator = validator;
             _invoiceRepository = invoiceRepository;
             _vendedorRepository = vendedorRepository;
             _comissaoRepository = comissaoRepository;
         }
 
-        public async Task<(ValidationResult Validation, InvoiceResponseDto? Data)> CriarAsync(CriarInvoiceDto dto)
-        {
-            var validation = new ValidationResult();
+        public async Task<ServiceResult> CriarAsync(CriarInvoiceDto dto)
+        { 
 
             var vendedor = await _vendedorRepository.GetByIdAsync(dto.VendedorId);
+
             if (vendedor is null)
             {
-                validation.Errors.Add(new ValidationFailure(nameof(dto.VendedorId), "Vendedor não encontrado."));
-                return (validation, null);
+                return ServiceResult.Falha("Vendedor não encontrado.");
             }
 
             if (!vendedor.Ativo)
             {
-                validation.Errors.Add(new ValidationFailure("Vendedor", "Vendedor inativo não pode receber comissões."));
-                return (validation, null);
+                return ServiceResult.Falha("Vendedor inativo não pode receber comissões.");
             }
 
             var invoice = new Invoice(
@@ -54,9 +59,10 @@ namespace Portal.Application.Invoices.Services
                 dto.Observacoes
             );
 
-            var invoiceValidation = new CadastroInvoiceValidator().Validate(invoice);
-            if (!invoiceValidation.IsValid)
-                return (invoiceValidation, null);
+            var validation = await _validator.ValidateAsync(invoice);
+
+            if (!validation.IsValid)
+                return ServiceResult.Falha(string.Join(" | ", validation.Errors.Select(e => e.ErrorMessage)));
 
             var comissao = new Comissao(
                 invoice.Id,
@@ -68,18 +74,17 @@ namespace Portal.Application.Invoices.Services
             await _invoiceRepository.AddAsync(invoice);
             await _comissaoRepository.AddAsync(comissao);
 
-            return (new ValidationResult(), Map(invoice));
+            return ServiceResult.BemSucedido(InvoiceView.Map(invoice));
         }
 
-        public async Task<(ValidationResult Validation, InvoiceResponseDto? Data)> AtualizarAsync(Guid id, AtualizarInvoiceDto dto)
+        public async Task<ServiceResult> AtualizarAsync(Guid id, AtualizarInvoiceDto dto)
         {
-            var validation = new ValidationResult();
+           
 
             var invoice = await _invoiceRepository.GetByIdAsync(id);
             if (invoice is null)
             {
-                validation.Errors.Add(new ValidationFailure("Id", "Invoice não encontrada."));
-                return (validation, null);
+                return ServiceResult.Falha("Invoice não encontrada."); 
             }
 
             var vendedorIdAtual = invoice.VendedorId;
@@ -87,8 +92,8 @@ namespace Portal.Application.Invoices.Services
 
             if (statusAtual == InvoiceStatus.Aprovada && dto.VendedorId != vendedorIdAtual)
             {
-                validation.Errors.Add(new ValidationFailure("VendedorId", "Não é permitido alterar o vendedor após aprovação."));
-                return (validation, null);
+                return ServiceResult.Falha( "Não é permitido alterar o vendedor após aprovação.");
+               
             }
 
             invoice.AtualizarDados(
@@ -101,28 +106,29 @@ namespace Portal.Application.Invoices.Services
                 dto.Observacoes
             );
 
-            var invoiceValidation = new CadastroInvoiceValidator().Validate(invoice);
-            if (!invoiceValidation.IsValid)
-                return (invoiceValidation, null);
+            var validation = await _validator.ValidateAsync(invoice);
+
+            if (!validation.IsValid)
+                return ServiceResult.Falha(string.Join(" | ", validation.Errors.Select(e => e.ErrorMessage)));
 
             var vendedor = await _vendedorRepository.GetByIdAsync(invoice.VendedorId);
             if (vendedor is null)
             {
-                validation.Errors.Add(new ValidationFailure("VendedorId", "Vendedor não encontrado."));
-                return (validation, null);
+                return ServiceResult.Falha( "Vendedor não encontrado.");
+               
             }
 
             if (!vendedor.Ativo)
             {
-                validation.Errors.Add(new ValidationFailure("VendedorId", "Vendedor inativo não pode receber comissões."));
-                return (validation, null);
+                return ServiceResult.Falha( "Vendedor inativo não pode receber comissões.");
+                
             }
 
             var comissao = await _comissaoRepository.GetByInvoiceIdAsync(invoice.Id);
             if (comissao is null)
             {
-                validation.Errors.Add(new ValidationFailure("Comissao", "Comissão não encontrada para esta Invoice."));
-                return (validation, null);
+                return ServiceResult.Falha( "Comissão não encontrada para esta Invoice.");
+              
             }
 
             comissao.Recalcular(invoice.ValorTotal, vendedor.PercentualComissao);
@@ -130,47 +136,37 @@ namespace Portal.Application.Invoices.Services
 
             await _invoiceRepository.UpdateAsync(invoice);
 
-            return (new ValidationResult(), Map(invoice));
+            return ServiceResult.BemSucedido(InvoiceView.Map(invoice));
         }
 
-        public async Task<ValidationResult> ExcluirAsync(Guid id)
+        public async Task<ServiceResult> ExcluirAsync(Guid id)
         {
-            var validation = new ValidationResult();
 
             var invoice = await _invoiceRepository.GetByIdAsync(id);
             if (invoice is null)
             {
-                validation.Errors.Add(new ValidationFailure("Id", "Invoice não encontrada."));
-                return validation;
+                return ServiceResult.Falha("Invoice não encontrada.");   
             }
 
             await _invoiceRepository.DeleteAsync(invoice);
-            return validation;
+            return ServiceResult.BemSucedido();
         }
 
-        public async Task<InvoiceResponseDto?> ObterAsync(Guid id)
+        public async Task<ServiceResult> ObterAsync(Guid Id)
         {
-            var invoice = await _invoiceRepository.GetByIdAsync(id);
-            return invoice is null ? null : Map(invoice);
+            var invoice = await _invoiceRepository.GetByIdAsync(Id);
+
+            if (invoice is null)
+                return ServiceResult.Falha("Invoice não encontrada.");
+
+            return ServiceResult.BemSucedido(InvoiceView.Map(invoice));
         }
 
-        public async Task<List<InvoiceResponseDto>> ListarAsync()
+        public async Task<ServiceResult> ListarAsync()
         {
             var list = await _invoiceRepository.ListAsync();
-            return list.Select(Map).ToList();
+            return ServiceResult.BemSucedido(list.Select(InvoiceView.Map).ToList());
         }
 
-        private static InvoiceResponseDto Map(Invoice invoice) => new()
-        {
-            Id = invoice.Id,
-            Numero = invoice.Numero,
-            DataEmissao = invoice.DataEmissao,
-            VendedorId = invoice.VendedorId,
-            ClienteNome = invoice.ClienteNome,
-            ClienteDocumento = invoice.ClienteDocumento,
-            ValorTotal = invoice.ValorTotal,
-            Status = invoice.Status,
-            Observacoes = invoice.Observacoes
-        };
     }
 }

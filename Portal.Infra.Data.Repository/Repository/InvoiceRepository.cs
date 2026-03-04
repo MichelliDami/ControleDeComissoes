@@ -44,6 +44,12 @@ namespace Portal.Infra.Data.Repository.Repository
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
+        public Task<Invoice?> GetByNumeroAsync(int numero)
+        {
+            return _context.Invoices
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Numero == numero);
+        }
         public Task<List<Invoice>> ListAsync()
         {
             return _context.Invoices

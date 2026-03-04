@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentValidation;
+using Portal.Application.Utils.Documento;
 using Portal.Domain.Models;
-using Portal.Domain.Validation.Documento;
 
-namespace Portal.Domain.Validation.Invoices
+namespace Portal.Application.Invoices.Validation
 {
     public class CadastroInvoiceValidator : AbstractValidator<Invoice>
     {
@@ -55,4 +55,3 @@ namespace Portal.Domain.Validation.Invoices
         }
     }
 }
-

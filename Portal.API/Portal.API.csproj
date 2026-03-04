@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -15,7 +15,6 @@
     <ProjectReference Include="..\Portal.Application\Portal.Application.csproj" />
     <ProjectReference Include="..\Portal.Domain\Portal.Domain.csproj" />
     <ProjectReference Include="..\Portal.Infra.Data.Repository\Portal.Infra.Data.Repository.csproj" />
-    <ProjectReference Include="..\Portal.Web\Portal.Web.csproj" />
   </ItemGroup>
 
 </Project>

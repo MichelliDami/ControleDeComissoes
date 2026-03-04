@@ -12,6 +12,8 @@ namespace Portal.Domain.Interfaces
         Task AddAsync(Invoice invoice);
         Task UpdateAsync(Invoice invoice);
         Task DeleteAsync(Invoice invoice);
+        Task<Invoice?> GetByNumeroAsync(int numero);
+
 
         Task<Invoice?> GetByIdAsync(Guid id);
         Task<List<Invoice>> ListAsync();

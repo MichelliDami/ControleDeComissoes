@@ -1,4 +1,4 @@
-﻿namespace Portal.API.ViewModel
+﻿namespace Portal.Web.Models.Vendedor
 {
     public class VendedorViewModel
     {

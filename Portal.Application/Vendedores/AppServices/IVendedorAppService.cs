@@ -5,20 +5,20 @@ using System.Text;
 using System.Threading.Tasks;
 using Portal.Application.Vendedores.DTOs;
 using FluentValidation.Results;
+using Portal.Application.Base;
 
 namespace Portal.Application.Vendedores.Services
 {
-        public interface IVendedorAppService
+        public interface IVendedorAppService : IAplicBase
+    {
+        public interface IVendedorAppService : IAplicBase
         {
-            Task<(ValidationResult Validation, VendedorResponseDto? Data)> CadastrarAsync(CadastrarVendedorDto dto);
+            Task<ServiceResult> CadastrarAsync(CadastrarVendedorDto dto);
 
-            Task<(ValidationResult Validation, VendedorResponseDto? Data)> AtualizarAsync(Guid id, AtualizarVendedorDto dto);
+            Task<ServiceResult> AtualizarAsync(Guid id, AtualizarVendedorDto dto);
 
-            Task<ValidationResult> ExcluirAsync(Guid id);
-
-            Task<VendedorResponseDto?> ObterAsync(Guid id);
-
-            Task<List<VendedorResponseDto>> ListarAsync();
+            Task<ServiceResult> ExcluirAsync(Guid id);
         }
+    }
     
 }

@@ -8,21 +8,29 @@ using Portal.Domain.Interfaces;
 using Portal.Domain.Models;
 using FluentValidation.Results;
 using Portal.Domain.Validation.Vendedores;
+using Portal.Application.Base;
+using FluentValidation;
+using Portal.Application.Invoices.Views;
+using Portal.Application.Vendedores.Views;
 
 namespace Portal.Application.Vendedores.Services
 {
     public class VendedorAppService : IVendedorAppService
     {
         private readonly IVendedorRepository _vendedorRepository;
-        private readonly IComissaoRepository _comissaoRepository;
+        private readonly IComissaoRepository _comissaoRepository; 
+        private readonly IValidator<Vendedor> _validator;
 
-        public VendedorAppService(IVendedorRepository vendedorRepository, IComissaoRepository comissaoRepository)
+        public VendedorAppService(IVendedorRepository vendedorRepository, 
+                                  IComissaoRepository comissaoRepository,
+                                  IValidator<Vendedor> validator)
         {
+            _validator = validator;
             _vendedorRepository = vendedorRepository;
             _comissaoRepository = comissaoRepository;
         }
 
-        public async Task<(ValidationResult Validation, VendedorResponseDto? Data)> CadastrarAsync(CadastrarVendedorDto dto)
+        public async Task<ServiceResult> CadastrarAsync(CadastrarVendedorDto dto)
         {
             var vendedor = new Vendedor(
                 dto.Nome,
@@ -32,99 +40,88 @@ namespace Portal.Application.Vendedores.Services
                 dto.PercentualComissao
             );
 
-            var validation = new CadastroVendedorValidator().Validate(vendedor);
+            var validation = await _validator.ValidateAsync(vendedor);
+
             if (!validation.IsValid)
-                return (validation, null);
+                return ServiceResult.Falha(string.Join(" | ", validation.Errors.Select(e => e.ErrorMessage)));
 
             if (await _vendedorRepository.ExisteCpfAsync(vendedor.Cpf, vendedor.Id))
-                validation.Errors.Add(new ValidationFailure(nameof(vendedor.Cpf), "CPF já cadastrado."));
+                return ServiceResult.Falha(" CPF já cadastrado.");
 
             if (await _vendedorRepository.ExisteEmailAsync(vendedor.Email, vendedor.Id))
-                validation.Errors.Add(new ValidationFailure(nameof(vendedor.Email), "Email já cadastrado."));
-
-            if (!validation.IsValid)
-                return (validation, null);
+                return ServiceResult.Falha("Email já cadastrado.");
 
             await _vendedorRepository.AddAsync(vendedor);
 
-            return (new ValidationResult(), Map(vendedor));
+            return ServiceResult.BemSucedido(VendedorView.Map(vendedor));
         }
 
-        public async Task<(ValidationResult Validation, VendedorResponseDto? Data)> AtualizarAsync(Guid id, AtualizarVendedorDto dto)
+        public async Task<ServiceResult> AtualizarAsync (Guid id, AtualizarVendedorDto dto)
         {
-            var validation = new ValidationResult();
+           
 
             var vendedor = await _vendedorRepository.GetByIdAsync(id);
             if (vendedor is null)
             {
-                validation.Errors.Add(new ValidationFailure("Id", "Vendedor não encontrado."));
-                return (validation, null);
+                return ServiceResult.Falha("Vendedor não encontrado.");
+              
             }
 
             vendedor.AtualizarDados(dto.Nome, dto.Cpf, dto.Email, dto.Telefone, dto.PercentualComissao, dto.Ativo);
 
-            validation = new CadastroVendedorValidator().Validate(vendedor);
+            var validation = await _validator.ValidateAsync(vendedor);
+
             if (!validation.IsValid)
-                return (validation, null);
+                return ServiceResult.Falha(string.Join(" | ", validation.Errors.Select(e => e.ErrorMessage)));
 
             if (await _vendedorRepository.ExisteCpfAsync(vendedor.Cpf, vendedor.Id))
-                validation.Errors.Add(new ValidationFailure(nameof(vendedor.Cpf), "CPF já cadastrado."));
+                return ServiceResult.Falha("CPF já cadastrado.");
 
             if (await _vendedorRepository.ExisteEmailAsync(vendedor.Email, vendedor.Id))
-                validation.Errors.Add(new ValidationFailure(nameof(vendedor.Email), "Email já cadastrado."));
-
-            if (!validation.IsValid)
-                return (validation, null);
+                return ServiceResult.Falha("Email já cadastrado.");
 
             await _vendedorRepository.UpdateAsync(vendedor);
 
-            return (new ValidationResult(), Map(vendedor));
+            return ServiceResult.BemSucedido(VendedorView.Map(vendedor));
         }
 
-        public async Task<ValidationResult> ExcluirAsync(Guid id)
+        public async Task<ServiceResult> ExcluirAsync(Guid id)
         {
             var validation = new ValidationResult();
 
             var vendedor = await _vendedorRepository.GetByIdAsync(id);
             if (vendedor is null)
             {
-                validation.Errors.Add(new ValidationFailure("Id", "Vendedor não encontrado."));
-                return validation;
+                return ServiceResult.Falha("Vendedor não encontrado.");
+              
             }
 
             var possuiComissoes = await _comissaoRepository.ExisteComissaoParaVendedorAsync(vendedor.Id);
             if (possuiComissoes)
             {
-                validation.Errors.Add(new ValidationFailure("Vendedor", "Não é permitido excluir vendedor com comissões registradas."));
-                return validation;
+                return ServiceResult.Falha("Não é permitido excluir vendedor com comissões registradas.");
+               
             }
-
             await _vendedorRepository.DeleteAsync(vendedor);
-            return validation;
+            return ServiceResult.BemSucedido();
         }
 
-        public async Task<VendedorResponseDto?> ObterAsync(Guid id)
+        public async Task<ServiceResult> ObterAsync(Guid id)
         {
             var vendedor = await _vendedorRepository.GetByIdAsync(id);
-            return vendedor is null ? null : Map(vendedor);
+            if (vendedor is null)
+                return ServiceResult.Falha("Vendedor não encontrada.");
+
+            return ServiceResult.BemSucedido(VendedorView.Map(vendedor));
         }
 
-        public async Task<List<VendedorResponseDto>> ListarAsync()
+        public async Task<ServiceResult> ListarAsync()
         {
             var list = await _vendedorRepository.ListAsync();
-            return list.Select(Map).ToList();
+            return ServiceResult.BemSucedido(list.Select(VendedorView.Map).ToList());
         }
 
-        private static VendedorResponseDto Map(Vendedor vendedor) => new()
-        {
-            Id = vendedor.Id,
-            Nome = vendedor.Nome,
-            Cpf = vendedor.Cpf,
-            Email = vendedor.Email,
-            Telefone = vendedor.Telefone,
-            PercentualComissao = vendedor.PercentualComissao,
-            Status = vendedor.Ativo
-        };
+       
     }
 }
 

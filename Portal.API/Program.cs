@@ -6,7 +6,11 @@ using Portal.Domain.Notifications.Portal.Domain.Notifications;
 using Portal.Infra.Data.Repository.Repository;
 using Microsoft.EntityFrameworkCore;
 using Portal.Infra.Data.Repository.Context;
-using Portal.API.Controllers.Configurations;
+using FluentValidation;
+using Portal.Domain.Models;
+using Portal.Application.Invoices.Validation;
+using Portal.Application.Vendedores.Validation;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +27,8 @@ builder.Services.AddScoped<IVendedorAppService, VendedorAppService>();
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddScoped<IVendedorRepository, VendedorRepository>();
 builder.Services.AddScoped<IComissaoRepository, ComissaoRepository>();
+builder.Services.AddScoped<IValidator<Invoice>, CadastroInvoiceValidator>();
+builder.Services.AddScoped<IValidator<Vendedor>, CadastroVendedorValidator>();
 
 builder.Services.AddScoped<INotificador, Notificador>();
 

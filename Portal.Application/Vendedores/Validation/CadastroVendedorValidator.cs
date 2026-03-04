@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentValidation;
+using Portal.Application.Utils.Documento;
 using Portal.Domain.Models;
-using Portal.Domain.Validation.Documento;
 
-namespace Portal.Domain.Validation.Vendedores
+namespace Portal.Application.Vendedores.Validation
 {
     public class CadastroVendedorValidator : AbstractValidator<Vendedor>
     {
@@ -43,9 +43,8 @@ namespace Portal.Domain.Validation.Vendedores
             if (string.IsNullOrWhiteSpace(cpf))
                 return false;
 
-            var doc = Utils.ApenasNumeros(cpf);
+            var doc = UtilsNumero.ApenasNumeros(cpf);
             return DocumentoValidator.Validar(doc);
         }
     }
 }
-
