@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -13,22 +14,24 @@ namespace Portal.Infra.Data.Repository.Repository
     public class InvoiceRepository : IInvoiceRepository
     {
         private readonly PortalDbContext _context;
+        public IUnitOfWork UnitOfWork => _context;
 
         public InvoiceRepository(PortalDbContext context)
         {
             _context = context;
         }
 
+
+
         public async Task AddAsync(Invoice invoice)
         {
-            await _context.Invoices.AddAsync(invoice);
-            await _context.SaveChangesAsync();
+           await _context.Invoices.AddAsync(invoice);
         }
 
-        public async Task UpdateAsync(Invoice invoice)
+        public Task UpdateAsync(Invoice invoice)
         {
             _context.Invoices.Update(invoice);
-            await _context.SaveChangesAsync();
+            return Task.CompletedTask;
         }
 
         public async Task DeleteAsync(Invoice invoice)
@@ -55,6 +58,14 @@ namespace Portal.Infra.Data.Repository.Repository
             return _context.Invoices
                 .AsNoTracking()
                 .OrderByDescending(x => x.DataEmissao)
+                .ToListAsync();
+        }
+
+        public Task<List<Invoice>> BuscarAsync(Expression<Func<Invoice, bool>> filtro)
+        {
+            return _context.Invoices
+                .AsNoTracking()
+                .Where(filtro)
                 .ToListAsync();
         }
     }

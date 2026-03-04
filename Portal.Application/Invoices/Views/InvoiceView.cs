@@ -42,7 +42,10 @@ namespace Portal.Application.Invoices.Views
                 ClienteDocumento = invoice.ClienteDocumento,
                 ValorTotal = invoice.ValorTotal,
                 Status = invoice.Status,
-                Observacoes = invoice.Observacoes
+                Observacoes = invoice.Observacoes,
+
+                 ComissaoView = invoice.Comissao is null ? null : ComissaoView.Map(invoice.Comissao)
+
             };
         }
     }

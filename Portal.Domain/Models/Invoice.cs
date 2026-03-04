@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Portal.Domain.Validation;
+
 
 namespace Portal.Domain.Models
 {
@@ -44,6 +44,8 @@ namespace Portal.Domain.Models
             Observacoes = observacoes;
             Status = InvoiceStatus.Pendente;
         }
+
+
 
         public void Aprovar()
         {

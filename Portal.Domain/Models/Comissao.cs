@@ -25,6 +25,7 @@ namespace Portal.Domain.Models
 
         public Comissao(Guid invoiceId, Guid vendedorId, decimal valorBase, decimal percentualAplicado)
         {
+         
             InvoiceId = invoiceId;
             VendedorId = vendedorId;
 

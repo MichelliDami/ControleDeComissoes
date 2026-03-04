@@ -51,7 +51,9 @@ namespace Portal.Infra.Data.Repository.Repository
 
         public async Task<List<Comissao>> ListAsync()
         {
-            return await _context.Comissoes.ToListAsync();
+            return await _context.Comissoes
+            .Include(c => c.Invoice)
+            .ToListAsync();
         }
 
         public Task<bool> ExisteComissaoParaVendedorAsync(Guid vendedorId)

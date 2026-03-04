@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Portal.Application.Dashboard.DTOs;
 using Portal.Application.Invoices.DTOs;
 using Portal.Application.Invoices.Services;
 using System.Net;
@@ -32,6 +33,18 @@ namespace Portal.API.Controllers.Invoice
         public async Task<IActionResult> DeletarPedido(Guid id)
         {
             return await Executar(async () => await _aplic.ExcluirAsync(id));
+        }
+
+        [HttpGet("dashboard")]
+        public async Task<IActionResult> Dashboard([FromQuery] DashboardInvoiceParametrosDto filtros)
+        {
+            return await Executar(async () => await _aplic.ObterDashboardAsync(filtros));
+        }
+
+        [HttpGet("dashboard/comissoes")]
+        public async Task<IActionResult> DashboardComissoes([FromQuery] DashboardInvoiceParametrosDto filtros)
+        {
+            return await Executar(async () => await _aplic.ObterDashboardComissoesAsync(filtros));
         }
 
 

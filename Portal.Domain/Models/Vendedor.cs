@@ -1,4 +1,4 @@
-﻿using Portal.Domain.Validation;
+﻿
 
 namespace Portal.Domain.Models
 {

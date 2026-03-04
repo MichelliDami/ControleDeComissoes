@@ -43,7 +43,7 @@ namespace Portal.Application.Invoices.Validation
             if (string.IsNullOrWhiteSpace(documento))
                 return false;
 
-            var doc = Utils.ApenasNumeros(documento);
+            var doc = UtilsNumero.ApenasNumeros(documento);
 
             if (doc.Length == DocumentoValidator.TamanhoCpf)
                 return DocumentoValidator.Validar(doc);

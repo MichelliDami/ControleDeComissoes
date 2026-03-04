@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using Portal.Domain.Models;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Portal.Infra.Data.Repository.Mappings
 {
@@ -19,8 +20,9 @@ namespace Portal.Infra.Data.Repository.Mappings
 
 
             builder.Property(x => x.Numero)
-                  .IsRequired()
-                  .UseIdentityColumn();
+             .ValueGeneratedOnAdd()
+             .UseIdentityColumn()
+             .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
 
             builder.HasIndex(x => x.Numero)
                    .IsUnique();

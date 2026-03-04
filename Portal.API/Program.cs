@@ -9,43 +9,46 @@ using Portal.Domain.Models;
 using Portal.Application.Invoices.Validation;
 using Portal.Application.Vendedores.Validation;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
-
-// Add services to the container.
-
+// services
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 builder.Services.AddScoped<IInvoiceAppService, InvoiceAppService>();
 builder.Services.AddScoped<IVendedorAppService, VendedorAppService>();
 
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddScoped<IVendedorRepository, VendedorRepository>();
 builder.Services.AddScoped<IComissaoRepository, ComissaoRepository>();
+
 builder.Services.AddScoped<IValidator<Invoice>, CadastroInvoiceValidator>();
 builder.Services.AddScoped<IValidator<Vendedor>, CadastroVendedorValidator>();
-
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddDbContext<PortalDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        sql => sql.EnableRetryOnFailure()
+    )
 );
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+
+using (var scope = app.Services.CreateScope())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    var db = scope.ServiceProvider.GetRequiredService<PortalDbContext>();
+    db.Database.Migrate();
 }
 
-app.UseHttpsRedirection();
+// pipeline
+app.UseSwagger();
+app.UseSwaggerUI();
 
+app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();

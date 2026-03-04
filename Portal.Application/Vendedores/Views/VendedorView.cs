@@ -29,7 +29,8 @@ namespace Portal.Application.Vendedores.Views
                 Email = vendedor.Email,
                 Telefone = vendedor.Telefone,
                 PercentualComissao = vendedor.PercentualComissao,
-                Ativo = vendedor.Ativo
+                Ativo = vendedor.Ativo,
+                DataCadastro =vendedor.DataCadastro
             };
         }
     }

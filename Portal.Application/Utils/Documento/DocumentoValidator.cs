@@ -12,7 +12,7 @@ namespace Portal.Application.Utils.Documento
 
         public static bool Validar(string cpf)
         {
-            var cpfNumeros = Utils.ApenasNumeros(cpf);
+            var cpfNumeros = UtilsNumero.ApenasNumeros(cpf);
 
             if (!TamanhoValido(cpfNumeros)) return false;
             return !TemDigitosRepetidos(cpfNumeros) && TemDigitosValidos(cpfNumeros);
@@ -61,7 +61,7 @@ namespace Portal.Application.Utils.Documento
 
         public static bool Validar(string cpnj)
         {
-            var cnpjNumeros = Utils.ApenasNumeros(cpnj);
+            var cnpjNumeros = UtilsNumero.ApenasNumeros(cpnj);
 
             if (!TemTamanhoValido(cnpjNumeros)) return false;
             return !TemDigitosRepetidos(cnpjNumeros) && TemDigitosValidos(cnpjNumeros);

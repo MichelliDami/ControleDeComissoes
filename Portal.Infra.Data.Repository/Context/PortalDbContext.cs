@@ -4,16 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Portal.Domain.Interfaces;
 using Portal.Domain.Models;
 
 namespace Portal.Infra.Data.Repository.Context
 {
-    public class PortalDbContext : DbContext
+    public class PortalDbContext : DbContext, IUnitOfWork
     {
         public PortalDbContext(DbContextOptions<PortalDbContext> options)
             : base(options)
         {
         }
+        public Task<int> CommitAsync() => SaveChangesAsync();
 
         public DbSet<Vendedor> Vendedores => Set<Vendedor>();
         public DbSet<Invoice> Invoices => Set<Invoice>();
