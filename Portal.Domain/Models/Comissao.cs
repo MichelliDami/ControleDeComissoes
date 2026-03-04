@@ -19,13 +19,13 @@ namespace Portal.Domain.Models
         public DateTime DataCalculo { get; private set; }
         public DateTime? DataPagamento { get; private set; }
 
-        public Invoice Invoice { get; private set; } = default!; 
+        public Invoice Invoice { get; private set; } = default!;
 
         private Comissao() { }
 
         public Comissao(Guid invoiceId, Guid vendedorId, decimal valorBase, decimal percentualAplicado)
         {
-         
+
             InvoiceId = invoiceId;
             VendedorId = vendedorId;
 
@@ -48,7 +48,7 @@ namespace Portal.Domain.Models
 
         private static decimal Calcular(decimal valorBase, decimal percentualAplicado)
         {
-     
+
             return Math.Round(valorBase * (percentualAplicado / 100m), 2);
         }
 

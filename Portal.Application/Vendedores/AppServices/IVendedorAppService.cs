@@ -9,15 +9,15 @@ using Portal.Application.Base;
 
 namespace Portal.Application.Vendedores.Services
 {
-  
-        public interface IVendedorAppService : IAplicBase
-        {
-            Task<ServiceResult> CadastrarAsync(CadastrarVendedorDto dto);
 
-            Task<ServiceResult> AtualizarAsync(Guid id, AtualizarVendedorDto dto);
+    public interface IVendedorAppService : IAplicBase
+    {
+        Task<ServiceResult> CadastrarAsync(CadastrarVendedorDto dto);
 
-            Task<ServiceResult> ExcluirAsync(Guid id);
-        }
+        Task<ServiceResult> AtualizarAsync(Guid id, AtualizarVendedorDto dto);
+
+        Task<ServiceResult> ExcluirAsync(Guid id);
+    }
 }
-    
+
 

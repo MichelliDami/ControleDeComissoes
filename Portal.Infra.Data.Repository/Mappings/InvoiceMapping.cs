@@ -36,7 +36,7 @@ namespace Portal.Infra.Data.Repository.Mappings
 
             builder.Property(x => x.ClienteDocumento)
                    .IsRequired()
-                   .HasMaxLength(14); 
+                   .HasMaxLength(14);
 
             builder.Property(x => x.ValorTotal)
                    .IsRequired()
@@ -47,11 +47,11 @@ namespace Portal.Infra.Data.Repository.Mappings
 
             builder.Property(x => x.Status)
                    .IsRequired()
-                   .HasConversion<int>(); 
+                   .HasConversion<int>();
 
-            
+
             builder.HasOne(x => x.Vendedor)
-                   .WithMany() 
+                   .WithMany()
                    .HasForeignKey(x => x.VendedorId)
                    .OnDelete(DeleteBehavior.Restrict);
         }

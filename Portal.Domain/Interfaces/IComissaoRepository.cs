@@ -15,7 +15,7 @@ namespace Portal.Domain.Interfaces
 
         Task<Comissao?> GetByIdAsync(Guid id);
 
-        
+
         Task<Comissao?> GetByInvoiceIdAsync(Guid invoiceId);
 
         Task<List<Comissao>> ListAsync();

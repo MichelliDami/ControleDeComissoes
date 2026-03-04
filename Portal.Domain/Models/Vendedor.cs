@@ -16,7 +16,7 @@ namespace Portal.Domain.Models
         private Vendedor() { }
 
 
-        public Vendedor(string nome, string cpf, string email,string? telefone, decimal percentualComissao)
+        public Vendedor(string nome, string cpf, string email, string? telefone, decimal percentualComissao)
         {
             Nome = nome;
             Cpf = cpf;
@@ -46,4 +46,4 @@ namespace Portal.Domain.Models
         }
     }
 
-    }
+}

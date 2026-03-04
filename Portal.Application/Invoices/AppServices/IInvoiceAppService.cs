@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Portal.Application.Invoices.DTOs;
-using FluentValidation.Results;
-using Portal.Application.Base;
+﻿using Portal.Application.Base;
 using Portal.Application.Dashboard.DTOs;
+using Portal.Application.Invoices.DTOs;
 
 namespace Portal.Application.Invoices.Services
 {

@@ -9,7 +9,7 @@ namespace Portal.Application.Invoices.DTOs
     public class AtualizarInvoiceDto
     {
         public DateTime DataEmissao { get; set; }
-        public Guid VendedorId { get; set; } 
+        public Guid VendedorId { get; set; }
 
         public string ClienteNome { get; set; } = string.Empty;
         public string ClienteDocumento { get; set; } = string.Empty;

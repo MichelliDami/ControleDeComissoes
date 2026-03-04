@@ -25,7 +25,7 @@ namespace Portal.API.Controllers
         {
             return await Executar(async () => await _aplic.ObterAsync(id));
         }
-  protected async Task<IActionResult> Executar(Func<Task<ServiceResult>> acao)
+        protected async Task<IActionResult> Executar(Func<Task<ServiceResult>> acao)
         {
             try
             {
@@ -41,7 +41,7 @@ namespace Portal.API.Controllers
             }
         }
 
-      
+
 
         protected IActionResult RetornoBase(ServiceResult resultado, string mensagem = "")
         {

@@ -26,7 +26,7 @@ namespace Portal.Domain.Models
 
         public Comissao? Comissao { get; private set; }
 
-        protected Invoice() { } 
+        protected Invoice() { }
 
         public Invoice(
             DateTime dataEmissao,

@@ -17,10 +17,10 @@ namespace Portal.Application.Vendedores.Services
     public class VendedorAppService : IVendedorAppService
     {
         private readonly IVendedorRepository _vendedorRepository;
-        private readonly IComissaoRepository _comissaoRepository; 
+        private readonly IComissaoRepository _comissaoRepository;
         private readonly IValidator<Vendedor> _validator;
 
-        public VendedorAppService(IVendedorRepository vendedorRepository, 
+        public VendedorAppService(IVendedorRepository vendedorRepository,
                                   IComissaoRepository comissaoRepository,
                                   IValidator<Vendedor> validator)
         {
@@ -55,15 +55,15 @@ namespace Portal.Application.Vendedores.Services
             return ServiceResult.BemSucedido(VendedorView.Map(vendedor));
         }
 
-        public async Task<ServiceResult> AtualizarAsync (Guid id, AtualizarVendedorDto dto)
+        public async Task<ServiceResult> AtualizarAsync(Guid id, AtualizarVendedorDto dto)
         {
-           
+
 
             var vendedor = await _vendedorRepository.GetByIdAsync(id);
             if (vendedor is null)
             {
                 return ServiceResult.Falha("Vendedor não encontrado.");
-              
+
             }
 
             vendedor.AtualizarDados(dto.Nome, dto.Cpf, dto.Email, dto.Telefone, dto.PercentualComissao, dto.Ativo);
@@ -92,14 +92,14 @@ namespace Portal.Application.Vendedores.Services
             if (vendedor is null)
             {
                 return ServiceResult.Falha("Vendedor não encontrado.");
-              
+
             }
 
             var possuiComissoes = await _comissaoRepository.ExisteComissaoParaVendedorAsync(vendedor.Id);
             if (possuiComissoes)
             {
                 return ServiceResult.Falha("Não é permitido excluir vendedor com comissões registradas.");
-               
+
             }
             await _vendedorRepository.DeleteAsync(vendedor);
             return ServiceResult.BemSucedido();
@@ -120,7 +120,7 @@ namespace Portal.Application.Vendedores.Services
             return ServiceResult.BemSucedido(list.Select(VendedorView.Map).ToList());
         }
 
-       
+
     }
 }
 

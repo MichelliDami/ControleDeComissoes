@@ -53,7 +53,7 @@ namespace Portal.Tests.Invoices
             // Act
             var result = await sut.CriarAsync(dto);
 
-            // Assert (ajuste nomes se seu ServiceResult for diferente)
+           
             result.Sucesso.Should().BeFalse();
             result.Erros.Should().Contain(e => e.Contains("Vendedor não encontrado", StringComparison.OrdinalIgnoreCase));
 
@@ -184,12 +184,11 @@ namespace Portal.Tests.Invoices
             _comissaoRepo.Verify(r => r.UpdateAsync(It.IsAny<Comissao>()), Times.Never);
         }
 
-        // ---------------- helpers ----------------
+    
 
         private static Vendedor CriarVendedorFake(bool ativo, decimal percentual = 5m)
         {
-            // Ajuste o construtor conforme o seu Vendedor real.
-            // O importante é: Id != Guid.Empty, Ativo = ativo, PercentualComissao = percentual.
+           
             var v = (Vendedor)Activator.CreateInstance(typeof(Vendedor), nonPublic: true)!;
 
             SetPrivate(v, "Id", Guid.NewGuid());
@@ -206,8 +205,7 @@ namespace Portal.Tests.Invoices
 
         private static Invoice CriarInvoiceFake(Guid vendedorId)
         {
-            // Ajuste o construtor conforme o seu Invoice real.
-            // Eu vou criar via reflection para não depender do construtor público.
+            
             var i = (Invoice)Activator.CreateInstance(typeof(Invoice), nonPublic: true)!;
 
             SetPrivate(i, "Id", Guid.NewGuid());
@@ -242,7 +240,7 @@ namespace Portal.Tests.Invoices
                 return;
             }
 
-            // fallback: procurar field direto
+          
             field = t.GetField(propOrFieldName,
                 System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
 

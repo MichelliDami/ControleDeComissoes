@@ -25,7 +25,7 @@ namespace Portal.Infra.Data.Repository.Repository
 
         public async Task AddAsync(Invoice invoice)
         {
-           await _context.Invoices.AddAsync(invoice);
+            await _context.Invoices.AddAsync(invoice);
         }
 
         public Task UpdateAsync(Invoice invoice)

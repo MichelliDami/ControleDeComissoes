@@ -9,17 +9,17 @@ using Portal.Domain.Models;
 
 namespace Portal.Application.Vendedores.Views
 {
-    public class VendedorView :ViewBase
+    public class VendedorView : ViewBase
     {
-        public string Nome { get;  set; }
-        public string Cpf { get;  set; }
-        public string Email { get;  set; }
-        public decimal PercentualComissao { get;  set; }
-        public DateTime DataCadastro { get;  set; }
-        public string? Telefone { get;  set; }
-        public bool Ativo { get;  set; }
+        public string Nome { get; set; }
+        public string Cpf { get; set; }
+        public string Email { get; set; }
+        public decimal PercentualComissao { get; set; }
+        public DateTime DataCadastro { get; set; }
+        public string? Telefone { get; set; }
+        public bool Ativo { get; set; }
 
-        public static VendedorView Map(Vendedor vendedor) 
+        public static VendedorView Map(Vendedor vendedor)
         {
             return new VendedorView
             {
@@ -30,7 +30,7 @@ namespace Portal.Application.Vendedores.Views
                 Telefone = vendedor.Telefone,
                 PercentualComissao = vendedor.PercentualComissao,
                 Ativo = vendedor.Ativo,
-                DataCadastro =vendedor.DataCadastro
+                DataCadastro = vendedor.DataCadastro
             };
         }
     }

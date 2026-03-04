@@ -13,24 +13,24 @@ namespace Portal.Application.Invoices.Views
 {
     public class InvoiceView : ViewBase
     {
-        public int Numero { get;  set; }
-        public DateTime DataEmissao { get;  set; }
+        public int Numero { get; set; }
+        public DateTime DataEmissao { get; set; }
 
-        public Guid VendedorId { get;  set; }
-        public VendedorView Vendedor { get;  set; }
+        public Guid VendedorId { get; set; }
+        public VendedorView Vendedor { get; set; }
 
-        public string ClienteNome { get;  set; }
-        public string ClienteDocumento { get;  set; }
+        public string ClienteNome { get; set; }
+        public string ClienteDocumento { get; set; }
 
-        public decimal ValorTotal { get;  set; }
+        public decimal ValorTotal { get; set; }
 
-        public InvoiceStatus Status { get;  set; }
+        public InvoiceStatus Status { get; set; }
 
-        public string? Observacoes { get;  set; }
+        public string? Observacoes { get; set; }
 
-        public ComissaoView? ComissaoView { get;  set; }
+        public ComissaoView? ComissaoView { get; set; }
 
-        public static InvoiceView Map(Invoice invoice) 
+        public static InvoiceView Map(Invoice invoice)
         {
             return new InvoiceView
             {
@@ -44,7 +44,7 @@ namespace Portal.Application.Invoices.Views
                 Status = invoice.Status,
                 Observacoes = invoice.Observacoes,
 
-                 ComissaoView = invoice.Comissao is null ? null : ComissaoView.Map(invoice.Comissao)
+                ComissaoView = invoice.Comissao is null ? null : ComissaoView.Map(invoice.Comissao)
 
             };
         }

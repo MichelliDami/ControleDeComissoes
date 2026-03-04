@@ -33,6 +33,6 @@ namespace Portal.API.Controllers.Vendedor
             return await Executar(async () => await _aplic.ExcluirAsync(id));
         }
 
-       
+
     }
 }
